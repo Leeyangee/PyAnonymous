@@ -2,7 +2,7 @@
 
 import test2
 
-def final():
+def main():
     return test2.test2() + 1
 
-print(final())
+print(main())
