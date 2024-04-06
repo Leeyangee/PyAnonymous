@@ -1,0 +1,3 @@
+
+SOFT_VERSION = "0.1"
+AGENT_LABEL = "WKTA.nano.miner/"+SOFT_VERSION
