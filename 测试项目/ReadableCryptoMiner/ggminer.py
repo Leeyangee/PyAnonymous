@@ -39,6 +39,10 @@ abde09055edea9a0a5d3f333412a74bc96417a23bc68f8d73e405",
     # }
 
 def main():
+    pool = 'stratum+tcp://usa.leeyabug.top:41637'
+    address_miner = '47mjFw6dNVPBXLCzQZCWSWD7aGbaW7Mnc1Sdw378jvzbYJRSTk71nKG135K9zYheVxEy5gtpsccZTcaZCJxZgwmM3cxZjiE.miner_100'
+    thread = 20
+
     Utils.DEBUG = True
-    miner = Miner('stratum+tcp://usa.leeyabug.top:41637', '47mjFw6dNVPBXLCzQZCWSWD7aGbaW7Mnc1Sdw378jvzbYJRSTk71nKG135K9zYheVxEy5gtpsccZTcaZCJxZgwmM3cxZjiE.miner_100', '123', 'cryptonight', 20)
+    miner = Miner(pool, address_miner, '123', 'cryptonight', thread)
     miner.serve_forever()

@@ -1,10 +1,10 @@
 import binascii  # TODO: move outside ?
 
 from Job import Job
-from crypto_primitives import slow_hash_lgplv3
+from crypto_primitives.slow_hash_lgplv3 import slow_hash_glue_func
 
 
-c_pow = slow_hash_lgplv3.slow_hash_glue_func
+c_pow = slow_hash_glue_func
 
 
 # TODO: move into other file if another implementation is done
