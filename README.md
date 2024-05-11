@@ -3,9 +3,15 @@
 <div align="center"> <img src="bugctf.png" width = 135 height = 99 /></div>
 <p align="center">PyAnonymous: 基于Python3的无落地项目加载解决方案</p>
 
-PyAnonymous(Py匿名)是一个基于Python3的无落地加载解决方案，它可以将一个完整的简单Py项目变为一行简单的Py表达式.  
+PyAnonymous(Py匿名)是一个基于Python3的无落地内存马加载解决方案，它可以将一个完整的简单Py项目变为一行简单的Py表达式.  
 
-当攻击者发现目标Python应用的代码执行点，可以在目标服务代码执行点(如exec、eval)执行该行表达式，将会自动将该项目加载进目标内存并可通过预设的命名空间手动调用
+📕PyAnonymous的原理是：使用反射等手段将用户的Py项目注入到默认的官方库(如: math、socket)中，并在官方库中预留项目入口，使得用户的Py项目在客户机内存中持久化并方便调用
+
+👊PyAnonymous相比于其他项目的优点在于：  
+1. PyAnonymous将会自动处理简单的依赖，会将依赖和主文件一起打包至表达式中. 
+2. PyAnonymous倡导全程无落地，在加载时无需任何文件落地. 
+
+在PyAnonymous生成表达式后，当攻击者发现目标Python应用的代码执行点，可以在目标服务代码执行点(如exec、eval)执行该行表达式，将会自动将该项目加载进目标内存并可通过预设的命名空间手动调用
 
 <div align="center"> <img src="图片/pic1.png" width = 350 /></div>
 
@@ -17,10 +23,6 @@ PyAnonymous(Py匿名)是一个基于Python3的无落地加载解决方案，它�
 
 ### [点这里查看如何将一个XMR挖矿项目转换](使用例子/XMR转换.md)
 
-⚠注意事项: 
-
-1. 当前版本暂时不支持相对路径引入(正在努力适配中)
-2. 请尽量避免循环引入
 
 🦙这是我自己的一个练手项目，希望师傅们多多包涵. 各位师傅可以提issue反馈问题
 
@@ -38,11 +40,13 @@ cd PyAnonymous
 
 1. 以默认命名空间生成test项目的Payload
 
+    
+
     ```vb
     python main.py -e './测试项目/test/test_main.py'
     ```
 
-    调用注入到内存的test项目
+    在运行Payload后，调用注入到内存的test项目
 
     ```py
     import math
@@ -55,19 +59,42 @@ cd PyAnonymous
     python main.py -e './测试项目/ReadableCryptoMiner/ggminer.py'
     ```
 
-    调用注入到内存的ReadableCryptoMiner项目
+    在运行Payload后，调用注入到内存的ReadableCryptoMiner项目
 
     ```py
     import math
     math.ggminer.main()
     ```
 
+在默认情况下，项目将会被加载至 math.<入口文件名称>中，您可以使用以下代码调用加载至内存中的项目
+```py
+import math
+math.<入口文件名>.<文件中的函数>()
+```
+
 
 
 ### [点这里查看如何将示例项目转换](使用例子/示例test.md)
 
 
-![测试1](https://raw.githubusercontent.com/Leeyangee/PyLineShell/main/%E6%B5%8B%E8%AF%951.png)
+# 注意事项
+
+1. ⚠在您的项目中引入模块时，如果您是手动引入模块(如下列代码所示)
+   ```py
+    __import__('test_mod').get()
+   ```
+   请在该文件前添加格式为#dep <模块名> 的注释使得PyAnonymous在打包时能将该依赖一同打包，如下所示
+   ```py
+    #dep test_mod
+
+    __import__('test_mod').get()
+   ```
+
+2. ⚠当前版本暂时不支持相对路径引入(正在努力适配中)
+
+3. ⚠PyAnonymous生成的Payload跨平台
+   
+4. ⚠一般来说，在test项目中支持的导入方式，正式环境中都完美支持
 
 # 鸣谢
 

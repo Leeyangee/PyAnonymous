@@ -1,9 +1,7 @@
 
 接下来的示例，将会展示如何将一个Python项目转换为一行表达式代码，然后会在一台计算机上使用该一行表达式代码将入口点加载到命名空中并且手动执行
 
-首先，先将PyAnonymous项目克隆到一台能够运行 Python3 的基于 Windows操作系统 的计算机上 (操作系统仅作演示，生成的Payload可跨平台)
-
-1. 笔者接下来要演示打包项目位于PyAnonymous根目录下 "./测试项目/test" 位置的项目(以下简称test项目)
+1. 测试项目位置(以下简称test项目): "./测试项目/test" 
 
     该项目的入口点为 "./测试项目/test/test_main.py"
 
@@ -14,20 +12,27 @@
     ```
     test
         test12
+            test121
+                test1211.py
             test4.py
             test6.py
         test34
+            test9
+                __init__.py
+            __init__.py
             test341.py
+            test342.py
         test_main.py
         test2.py
         test3.py
         test7.py
         test8.py
+        testpure.py
     ```
 
 2. 接下来的步骤将test项目打包为一行表达式代码.  
-   
-    首先了解一下main.py的参数设置:  
+    
+    首先我们了解一下main.py的参数设置:  
     -e --entry 项目入口位置，默认为 "./测试项目/test/test_main.py"  
     -n --namespace 项目入口加载到的命名空间，默认为 math
    
@@ -81,6 +86,6 @@
     ```py
     >>> import math
     >>> math.test_main.main()
-    75
+    409
     ```
-    成功输出75，证明test项目入口连同整个项目被成功加载至math命名空间中
+    成功输出409，证明test项目入口连同整个项目被成功加载至math命名空间中

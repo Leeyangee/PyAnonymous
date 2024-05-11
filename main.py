@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 import argparse
 import chardet
+import imp
 
 class logger:
 
@@ -89,10 +90,14 @@ class DirSerialize(Serialize):
                     #是 from ... import ... 引入的包或者包名为 __init__ 时
                     if pkg_name in self.import1 or pkg_name == '__init__':
                         #with logger.PrintDep(f'正在分析namespace中包: ' + pkg_name):
-                            with self.EnvAdd(path):
-                                curDependence: types.ModuleType = importlib.import_module(pkg_name)
-                                print(sys.path)
-                                print(curDependence.__file__)
+
+                            fp, pathname, desc = imp.find_module(pkg_name, [path])
+                            curDependence = imp.load_module(pkg_name, fp, pathname, desc)
+                            if False:
+                                with self.EnvAdd(path):
+                                    curDependence: types.ModuleType = importlib.import_module(pkg_name)
+                                #print(sys.path)
+                                #print(curDependence.__file__)
                             if hasattr(curDependence, '__file__'):
                                 #若该依赖为namespace
                                 if hasattr(curDependence, '__path__'):
@@ -291,11 +296,19 @@ class Payload(object):
 def surface_ZzRTSoDE(m, n):
     def deep_ZzRTSoDE(mn, c, d):
         a=__import__('imp').new_module(mn)
-        for d1 in d:
-            a.__dict__[d1]=deep_ZzRTSoDE(d1, d[d1][0], d[d1][1])
-            __import__('sys').modules[d1] = a.__dict__[d1]
-        for c1 in c: exec(__import__('base64').b64decode(c1), a.__dict__)
-        return a
+        while True:
+            try:
+                d_i = list(d.keys())
+                #将keys列表随机排列，完美解决交叉依赖时出现错误的问题
+                __import__('random').shuffle(d_i)
+                for d1 in d_i:
+                    a.__dict__[d1] = deep_ZzRTSoDE(d1, d[d1][0], d[d1][1])
+                    __import__('sys').modules[d1] = a.__dict__[d1]
+                for c1 in c: 
+                    exec(__import__('base64').b64decode(c1), a.__dict__)
+                return a
+            except:
+                pass
     for i in m:n[i]=deep_ZzRTSoDE(i, m[i][0], m[i][1])
 ''', 'surface_ZzRTSoDE')#普通加载器
 ]
@@ -343,32 +356,50 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description="PyAnonymous(Py匿名)是一个基于Python3的无落地加载解决方案，它可以将一个完整的简单Py项目变为一行简单的Py表达式"
     )
-    parser.add_argument("-e", "--entry", default="./测试项目/test/test_main.py", help="要加载的项目入口(默认为自带测试项目)")
-    parser.add_argument("-n", "--namespace", default='math', help="要将项目入口加载到的命名空间(默认为 math)")
-    parser.add_argument("-s", "--start" , action='store_true', default=False, help='GAT with sparse version or not.')
+    parser.add_argument("-e", "--entry", default=None, help="要加载的项目入口(默认为自带测试项目)")
+    parser.add_argument("-n", "--namespace", default='math', help="要将项目入口加载到的命名空间(默认为 math，在不知道这是啥的情况下请勿乱更改)")
+    parser.add_argument("-s", "--start" , action='store_true', default=False, help='是否试运行')
+
     options = parser.parse_args(sys.argv[1:])
 
     entry = options.entry
     namespace = options.namespace
     start = options.start
 
-    entry_name = path_to_pkgname(entry)
+    if entry == None: 
+        print('''
+    警告: 您未选择要序列化的项目          
+    
+    PyAnonymous(Py匿名)是一个基于Python3的无落地加载解决方案，它可以将一个完整的简单Py项目变为一行简单的Py表达式
+    更多帮助，请查看项目地址: https://github.com/Leeyangee/PyAnonymous
+    可选参数:
+              
+    -h, --help            
+                        展示帮助界面
+    -e ENTRY, --entry ENTRY 
+                        要加载的项目入口
+    -n NAMESPACE, --namespace NAMESPACE 
+                        要将项目入口加载到的命名空间(默认为 math，在不知道这是啥的情况下请勿乱更改)
+    -s, --start          
+                        是否试运行''')
+    else:
+        entry_name = path_to_pkgname(entry)
 
-    entry_path = os.path.dirname(entry)
-    sys.path.append(entry_path)
+        entry_path = os.path.dirname(entry)
+        sys.path.append(entry_path)
 
-    print(f'---------------------依赖分析---------------------')
-    depChain = DocSerialize(entry)
-    print(depChain.getRes())
-    depChain = { entry_name: depChain.getRes() }
-    print(f'---------------------生成的Payload---------------------')
-    payload = Payload(depChain = depChain, namespace = namespace)
-    result = payload.getRes()
-    print(result)
-    if start:
-        print(f'---------------------试运行结果---------------------')
-        exec(result)
-        exec(f'''
+        print(f'---------------------依赖分析---------------------')
+        depChain = DocSerialize(entry)
+        print(depChain.getRes())
+        depChain = { entry_name: depChain.getRes() }
+        print(f'---------------------生成的Payload---------------------')
+        payload = Payload(depChain = depChain, namespace = namespace)
+        result = payload.getRes()
+        print(result)
+        if start:
+            print(f'---------------------试运行结果---------------------')
+            exec(result)
+            exec(f'''
 import {namespace}
 {namespace}.{entry_name}.main()
              ''')

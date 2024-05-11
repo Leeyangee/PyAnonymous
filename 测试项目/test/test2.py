@@ -1,7 +1,6 @@
 #dep test3
 
-from test12 import test6
-from test12 import test4
+from test12 import test6, test4
 from test12.test121.test1211 import test1211
 import test34
 
