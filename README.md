@@ -9,9 +9,10 @@ PyAnonymous(Py匿名)是一个基于Python3的无落地内存马加载解决方�
 
 👊PyAnonymous相比于其他项目的优点在于：  
 1. PyAnonymous将会自动处理简单的依赖，会将依赖和主文件一起打包至表达式中. 
-2. PyAnonymous倡导全程无落地，在加载时无需任何文件落地. 
+2. PyAnonymous倡导全程无落地，在加载时无需任何文件落地.
+3. PyAnonymous为项目入口文件提供预留攻击者接口，将入口文件以模块的形式注入进默认math库中，方便攻击者调用
 
-在PyAnonymous生成表达式后，当攻击者发现目标Python应用的代码执行点，可以在目标服务代码执行点(如exec、eval)执行该行表达式，将会自动将该项目加载进目标内存并可通过预设的命名空间手动调用
+在PyAnonymous生成表达式后，当攻击者发现目标Python应用的代码执行点，可以在目标服务代码执行点(如exec、eval)执行该行表达式，将会自动将该项目加载进目标内存并可通过预设的math手动调用
 
 <div align="center"> <img src="图片/pic1.png" width = 350 /></div>
 
@@ -46,7 +47,7 @@ cd PyAnonymous
     python main.py -e './测试项目/test/test_main.py'
     ```
 
-    在运行Payload后，调用注入到内存的test项目
+    在其他计算机运行Payload后，项目入口文件 test_main.py 作为模块被注入至 math 模块中即: math.test_main，以下代码调用注入到内存的test项目入口中的函数
 
     ```py
     import math
@@ -59,7 +60,7 @@ cd PyAnonymous
     python main.py -e './测试项目/ReadableCryptoMiner/ggminer.py'
     ```
 
-    在运行Payload后，调用注入到内存的ReadableCryptoMiner项目
+    在其他计算机运行Payload后，项目入口文件 ggminer.py 作为模块被注入至 math 模块中即: math.ggminer，以下代码调用注入到内存的ReadableCryptoMiner项目入口中的函数
 
     ```py
     import math
@@ -90,7 +91,10 @@ math.<入口文件名>.<文件中的函数>()
     __import__('test_mod').get()
    ```
 
-2. ⚠当前版本暂时不支持相对路径引入(正在努力适配中)
+2. ❌当前版本暂时不支持相对路径引入(正在努力适配中)
+   ```py
+   from .display import dis #不支持相对路径导入，请更改为绝对路径导入
+   ```
 
 3. ⚠PyAnonymous生成的Payload跨平台
    
@@ -101,5 +105,7 @@ math.<入口文件名>.<文件中的函数>()
 在开发的过程中，少不了以下开源/开放代码的支持
 
 * 作为测试项目被引入: https://github.com/wkta/ReadableCryptoMiner
+
+* 作为测试项目被引入: https://github.com/kingkaki/weblogic-scan
 
 <div align="center"> <img src="bugctf.png" width = 135 height = 99 /></div>

@@ -88,7 +88,7 @@ class DirSerialize(Serialize):
                     else:
                         pkg_name: str = file
                     #是 from ... import ... 引入的包或者包名为 __init__ 时
-                    if pkg_name in self.import1 or pkg_name == '__init__':
+                    if pkg_name in self.import1 or pkg_name == '__init__' or self.import1 == '*':
                         #with logger.PrintDep(f'正在分析namespace中包: ' + pkg_name):
 
                             fp, pathname, desc = imp.find_module(pkg_name, [path])
@@ -181,15 +181,17 @@ class DocSerialize(Serialize):
                     if line.startswith('from '):
                         #分析有as情况
                         if ' as ' in line:
-                            from1: str = line.split('from ')[1].split(' import ')[0]
-                            import1: str = line.split('import ')[1].split(' as ')[0]
+                            from1: str = line.split('from ')[1].split(' import ')[0].strip(' ')
+                            import1: str = line.split('import ')[1].split(' as ')[0].strip(' ')
                         #分析无as情况
                         else:
-                            from1: str = line.split('from ')[1].split(' import ')[0]
-                            import1: str = line.split('import ')[1]
+                            from1: str = line.split('from ')[1].split(' import ')[0].strip(' ')
+                            import1: str = line.split('import ')[1].strip(' ')
 
                         #逗号多个引入的情况
-                        if ',' in import1:
+                        if import1 == '*':
+                            self.addFromImport(from1, '*')
+                        elif ',' in import1:
                             for i1 in import1.split(','): self.addFromImport(from1, i1.strip(' '))
                         else:
                             self.addFromImport(from1, import1)
@@ -308,7 +310,7 @@ def surface_ZzRTSoDE(m, n):
                     exec(__import__('base64').b64decode(c1), a.__dict__)
                 return a
             except:
-                pass
+                print('引入出现顺序错误，正在打乱重新引入')
     for i in m:n[i]=deep_ZzRTSoDE(i, m[i][0], m[i][1])
 ''', 'surface_ZzRTSoDE')#普通加载器
 ]
@@ -396,6 +398,9 @@ if __name__ == '__main__':
         payload = Payload(depChain = depChain, namespace = namespace)
         result = payload.getRes()
         print(result)
+        print(f'---------------------调用命令---------------------')
+        print(f'''import {namespace}
+{namespace}.{entry_name}''')
         if start:
             print(f'---------------------试运行结果---------------------')
             exec(result)
