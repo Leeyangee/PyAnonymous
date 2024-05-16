@@ -1,11 +1,11 @@
 ### [繁體中文](README_en.md)
 
-<div align="center"> <img src="bugctf.png" width = 135 height = 99 /></div>
+<div align="center"> <img src="https://leeyabug-top-1309475701.cos-website.ap-nanjing.myqcloud.com/PyAnonymous/bugctf.png" width = 135 height = 99 /></div>
 <p align="center">PyAnonymous: 基于Python3的无落地项目加载解决方案</p>
 
 PyAnonymous(Py匿名)是一个基于Python3的无落地内存马加载解决方案，它可以将一个完整的简单Py项目变为一行简单的Py表达式.  
 
-📕PyAnonymous的原理是：使用反射等手段将用户的Py项目注入到默认的官方库(如: math、socket)中，并在官方库中预留项目入口，使得用户的Py项目在客户机内存中持久化并方便调用
+📕PyAnonymous的原理是：使用反射等手段将用户的Py项目注入到其他计算机的默认的官方库(如: math、socket)中，并在该官方库下预留项目入口，使得用户的Py项目在其他计算机的内存中持久化并方便调用
 
 👊PyAnonymous相比于其他项目的优点在于：  
 1. PyAnonymous将会自动处理简单的依赖，会将依赖和主文件一起打包至表达式中. 
@@ -14,11 +14,11 @@ PyAnonymous(Py匿名)是一个基于Python3的无落地内存马加载解决方�
 
 在PyAnonymous生成表达式后，当攻击者发现目标Python应用的代码执行点，可以在目标服务代码执行点(如exec、eval)执行该行表达式，将会自动将该项目加载进目标内存并可通过预设的math手动调用
 
-<div align="center"> <img src="图片/pic1.png" width = 350 /></div>
+<div align="center"> <img src="https://leeyabug-top-1309475701.cos-website.ap-nanjing.myqcloud.com/PyAnonymous/pic1.png" width = 350 /></div>
 
 💡对于绝大部分项目，都可以一键将其转化为Payload. 对于全部应用(Web应用、框架)的代码执行处，都可以一键向内存中写入项目并运行
 
-<div align="center"> <img src="图片/pic2.png" width = 350 /></div>
+<div align="center"> <img src="https://leeyabug-top-1309475701.cos-website.ap-nanjing.myqcloud.com/PyAnonymous/pic2.png" width = 350 /></div>
 
 ### [点这里查看如何将示例项目转换](使用例子/示例test.md)
 
@@ -108,4 +108,4 @@ math.<入口文件名>.<文件中的函数>()
 
 * 作为测试项目被引入: https://github.com/kingkaki/weblogic-scan
 
-<div align="center"> <img src="bugctf.png" width = 135 height = 99 /></div>
+<div align="center"> <img src="https://leeyabug-top-1309475701.cos-website.ap-nanjing.myqcloud.com/PyAnonymous/bugctf.png" width = 135 height = 99 /></div>
